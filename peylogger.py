@@ -3,11 +3,15 @@ from time import sleep
 import ctypes as ct
 from ctypes.util import find_library
 from time import time
+from struct import pack
 
 assert("linux" in sys.platform)
 
 
 x11 = ct.cdll.LoadLibrary(find_library("X11"))
+
+# unsigned char key, bool pressed, int timestamp (microsec)
+struct_format = 'B?L'
 
 
 def fetch_keys(sleep_interval=0.005):
@@ -30,6 +34,11 @@ def fetch_keys(sleep_interval=0.005):
                 yield (position,bool(c))
 
 
+def log(output_file, sleep_interval=0.005):
+    for key,pressed in fetch_keys():
+        output_file.write(pack(struct_format, key, pressed, int(time()*1000)))
+        output_file.flush()
+
+
 if __name__ == "__main__":
-    for key in fetch_keys():
-        print key, time()
+    log(sys.stdout)
