@@ -12,9 +12,6 @@ __all__ = ('struct_format', 'fetch_keys', 'log', '__main__')
 
 x11 = ct.cdll.LoadLibrary(find_library("X11"))
 
-# unsigned char key, bool pressed, unsigned long timestamp (microsec)
-struct_format = 'B?L'
-
 
 def fetch_keys(sleep_interval=0.005):
     display = x11.XOpenDisplay(None)
@@ -36,9 +33,11 @@ def fetch_keys(sleep_interval=0.005):
                 yield (position,bool(c))
 
 
-def log(output_file, sleep_interval=0.005):
+# data_format: unsigned char key, bool pressed, unsigned long timestamp (microsec)
+# see: http://docs.python.org/2/library/struct.html#format-characters
+def log(output_file, sleep_interval=0.005, data_format='B?L'):
     for key,pressed in fetch_keys():
-        output_file.write(pack(struct_format, key, pressed, int(time()*1000)))
+        output_file.write(pack(data_format, key, pressed, int(time()*1000)))
         output_file.flush()
 
 
